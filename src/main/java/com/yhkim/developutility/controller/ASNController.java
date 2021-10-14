@@ -4,6 +4,7 @@ import com.yhkim.developutility.dto.ASNDTO;
 import io.swagger.annotations.Api;
 import lombok.AllArgsConstructor;
 import org.bouncycastle.asn1.ASN1InputStream;
+import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.util.ASN1Dump;
 import org.bouncycastle.util.encoders.Base64;
 import org.bouncycastle.util.encoders.DecoderException;
@@ -27,7 +28,7 @@ public class ASNController {
             Object obj = null;
             StringBuilder output = new StringBuilder();
             while ((obj = asn1InputStream.readObject()) != null) {
-                output.append(ASN1Dump.dumpAsString(obj));
+                output.append(ASN1Dump.dumpAsString(obj, true));
                 output.append("\n");
             }
             return ResponseEntity.ok(output.toString());
