@@ -1,4 +1,6 @@
 server:
+  port: 9090
+
   tomcat:
     use-relative-redirects: true
   servlet:
