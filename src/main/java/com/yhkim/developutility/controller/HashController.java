@@ -1,5 +1,6 @@
 package com.yhkim.developutility.controller;
 
+import com.yhkim.developutility.dto.HashDTO;
 import io.swagger.annotations.Api;
 import lombok.AllArgsConstructor;
 import org.bouncycastle.util.encoders.Hex;
@@ -16,13 +17,13 @@ import java.security.MessageDigest;
 public class HashController {
 
     @PostMapping("/sha-1")
-    public ResponseEntity<String> sha1(@RequestBody String plainText) throws Exception {
-        return ResponseEntity.ok(hash(plainText, MessageDigest.getInstance("SHA-1")));
+    public ResponseEntity<String> sha1(@RequestBody HashDTO hashDTO) throws Exception {
+        return ResponseEntity.ok(hash(hashDTO.getPlainText(), MessageDigest.getInstance("SHA-1")));
     }
 
     @PostMapping("/sha-256")
-    public ResponseEntity<String> sha256(@RequestBody String plainText) throws Exception {
-        return ResponseEntity.ok(hash(plainText, MessageDigest.getInstance("SHA-256")));
+    public ResponseEntity<String> sha256(@RequestBody HashDTO hashDTO) throws Exception {
+        return ResponseEntity.ok(hash(hashDTO.getPlainText(), MessageDigest.getInstance("SHA-256")));
     }
 
     private String hash(String plainText, MessageDigest messageDigest) {

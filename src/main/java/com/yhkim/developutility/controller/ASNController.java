@@ -1,5 +1,6 @@
 package com.yhkim.developutility.controller;
 
+import com.yhkim.developutility.dto.ASNDTO;
 import io.swagger.annotations.Api;
 import lombok.AllArgsConstructor;
 import org.bouncycastle.asn1.ASN1InputStream;
@@ -18,7 +19,8 @@ import java.io.IOException;
 public class ASNController {
 
     @PostMapping("/decode")
-    public ResponseEntity<String> decodeASN(@RequestBody String encodedString) {
+    public ResponseEntity<String> decodeASN(@RequestBody ASNDTO asndto) {
+        String encodedString = asndto.getEncodedString();
         try {
             encodedString = encodedString.replaceAll("\n", "");
             ASN1InputStream asn1InputStream = new ASN1InputStream(Base64.decode(encodedString));
