@@ -21,8 +21,7 @@ public class CustomASN1Dump {
 
     public String dumpAsString(
             Object   obj,
-            boolean  verbose)
-    {
+            boolean  verbose) throws IOException {
         StringBuffer buf = new StringBuffer();
 
         if (obj instanceof ASN1Primitive)
@@ -41,6 +40,28 @@ public class CustomASN1Dump {
         return buf.toString();
     }
 
+    public String dumpAsString(
+            Object   obj,
+            boolean  verbose,
+            String indent) throws IOException {
+        StringBuffer buf = new StringBuffer();
+
+        if (obj instanceof ASN1Primitive)
+        {
+            _dumpAsString(indent, verbose, (ASN1Primitive)obj, buf);
+        }
+        else if (obj instanceof ASN1Encodable)
+        {
+            _dumpAsString(indent, verbose, ((ASN1Encodable)obj).toASN1Primitive(), buf);
+        }
+        else
+        {
+            return "unknown object type " + obj.toString();
+        }
+
+        return buf.toString();
+    }
+
     /**
      * dump a DER object as a formatted string with indentation
      *
@@ -50,8 +71,7 @@ public class CustomASN1Dump {
             String      indent,
             boolean     verbose,
             ASN1Primitive obj,
-            StringBuffer    buf)
-    {
+            StringBuffer    buf) throws IOException {
         String nl = Strings.lineSeparator();
         if (obj instanceof ASN1Sequence)
         {
@@ -172,22 +192,30 @@ public class CustomASN1Dump {
         else if (obj instanceof ASN1OctetString)
         {
             ASN1OctetString oct = (ASN1OctetString)obj;
-
-            if (obj instanceof BEROctetString)
-            {
-                buf.append(indent + "BER Constructed Octet String" + "[" + oct.getOctets().length + "] ");
-            }
-            else
-            {
-                buf.append(indent + "DER Octet String" + "[" + oct.getOctets().length + "] ");
-            }
-            if (verbose)
-            {
-                buf.append(dumpBinaryDataAsString(indent, oct.getOctets()));
-            }
-            else
-            {
-                buf.append(nl);
+            ASN1InputStream asn1InputStream = new ASN1InputStream(oct.getOctets());
+            Object object = null;
+            try {
+                indent += TAB;
+                while ((object = asn1InputStream.readObject()) != null) {
+                    buf.append(dumpAsString(object, true, indent));
+                }
+            } catch (IOException e) {
+                if (obj instanceof BEROctetString)
+                {
+                    buf.append(indent + "BER Constructed Octet String" + "[" + oct.getOctets().length + "] ");
+                }
+                else
+                {
+                    buf.append(indent + "DER Octet String" + "[" + oct.getOctets().length + "] ");
+                }
+                if (verbose)
+                {
+                    buf.append(dumpBinaryDataAsString(indent, oct.getOctets()));
+                }
+                else
+                {
+                    buf.append(nl);
+                }
             }
         }
         else if (obj instanceof ASN1ObjectIdentifier)
